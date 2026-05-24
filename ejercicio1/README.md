@@ -14,7 +14,7 @@ El objetivo es leer un archivo CSV con transacciones históricas, detectar y cor
 
 ## DAG de Airflow
 
-El DAG creado se llama:
+El DAG creado es el siguiente:
 
 ![Código utilizado](./Airflow/dags/etl_engineer_challenge.py)
 
