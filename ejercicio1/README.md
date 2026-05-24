@@ -116,9 +116,7 @@ FROM bronze.prueba.tbl_data
 
 La evidencia de la consulta se encuentra en la siguiente imagen:
 
-```text
-./query_trino_dbeaver.png
-```
+![Consulta Trino desde DBeaver](./query_trino_dbeaver.png)
 
 > Nota: la imagen corresponde a la ejecución de una consulta SQL en DBeaver sobre la tabla `bronze.prueba.tbl_data`, creada a partir del archivo Parquet almacenado en MinIO.
 
