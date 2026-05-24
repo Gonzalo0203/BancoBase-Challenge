@@ -1,3 +1,17 @@
+# Ejercicio 1 - Airflow + MinIO + Trino
+
+## Descripción
+
+Este ejercicio implementa un pipeline ETL utilizando **Airflow**, **MinIO** y **Trino**.
+
+El objetivo es leer un archivo CSV con transacciones históricas, detectar y corregir inconsistencias básicas, realizar agregaciones sobre los campos `name` y `created_at`, guardar el resultado en formato Parquet dentro de MinIO y disponibilizarlo para consulta SQL mediante Trino.
+
+---
+
+## Arquitectura propuesta
+
+![Arquitectura utilizada](./dataArchitecture.svg)
+
 ## Preguntas adicionales
 
 ### 1. Para los ids nulos ¿Qué sugieres hacer con ellos?
