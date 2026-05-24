@@ -12,6 +12,12 @@ El objetivo es leer un archivo CSV con transacciones históricas, detectar y cor
 
 ![Arquitectura utilizada](./dataArchitecture.svg)
 
+## DAG de Airflow
+
+El DAG creado se llama:
+
+![Código utilizado](./Airflow/dags/etl_engineer_challenge.py)
+
 ## Preguntas adicionales
 
 ### 1. Para los ids nulos ¿Qué sugieres hacer con ellos?
