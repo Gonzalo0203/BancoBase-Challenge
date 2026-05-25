@@ -470,3 +470,239 @@ Justificación:
 - Los grafos requieren un motor especializado en relaciones, no solo tablas relacionales.
 
 ---
+
+## H. ¿Cómo orquestarías el pipeline diario y con qué herramienta?
+
+Orquestaría el pipeline con **Apache Airflow** o un servicio administrado equivalente como:
+
+- Amazon MWAA.
+- Cloud Composer.
+- Azure Data Factory.
+- Dagster.
+- Prefect.
+
+Flujo diario propuesto:
+
+```text
+1. Extraer cambios del CRM.
+2. Extraer cambios de SQL Server.
+3. Extraer cambios de PostgreSQL.
+4. Guardar datos crudos en Raw.
+5. Validar estructura y calidad inicial.
+6. Transformar a Bronze.
+7. Integrar y homologar en Silver.
+8. Generar modelos Gold.
+9. Cargar Data Warehouse.
+10. Generar features para ciencia de datos.
+11. Actualizar base de grafos.
+12. Registrar métricas de ejecución.
+13. Enviar alertas en caso de error.
+```
+
+Airflow permite programar ejecuciones diarias, controlar dependencias, reintentos, logs, alertas y monitoreo de cada tarea.
+
+---
+
+## I. Diagrama de la propuesta de arquitectura
+
+El diagrama de arquitectura debe incluir las fuentes, la ingesta, las capas del Data Lake, las transformaciones, la salida SQL y la salida para ciencia de datos.
+
+![Arquitectura Propuesta](./dataArchitectureEjercicio2.svg)
+
+# 6. Seguridad
+
+## ¿Cómo mantendrías la seguridad del flujo de datos end-to-end?
+
+La seguridad debe cubrir todo el flujo: extracción, transporte, almacenamiento, procesamiento y consumo.
+
+### Controles propuestos
+
+| Capa | Medida de seguridad |
+|---|---|
+| Extracción | Credenciales en Secrets Manager o Vault |
+| Transporte | Cifrado TLS |
+| Almacenamiento | Cifrado en reposo con KMS |
+| Procesamiento | Roles de ejecución con mínimo privilegio |
+| Consumo | RBAC, vistas seguras y enmascaramiento |
+| Auditoría | Logs de acceso y monitoreo |
+| Datos sensibles | Tokenización, hashing o masking |
+
+### Medidas específicas
+
+1. **Gestión de secretos**
+
+   No almacenar usuarios ni contraseñas en código.
+
+   Herramientas:
+   - AWS Secrets Manager.
+   - Azure Key Vault.
+   - HashiCorp Vault.
+   - GCP Secret Manager.
+
+2. **Cifrado en tránsito**
+
+   Todas las conexiones deben usar TLS/SSL.
+
+3. **Cifrado en reposo**
+
+   Los buckets, tablas y bases destino deben estar cifrados.
+
+   Herramientas:
+   - AWS KMS.
+   - Azure Key Vault.
+   - GCP KMS.
+
+4. **Control de acceso por roles**
+
+   Aplicar principio de menor privilegio.
+
+   Ejemplo:
+   - Rol de ingesta.
+   - Rol de transformación.
+   - Rol de consulta operativa.
+   - Rol de ciencia de datos.
+   - Rol de administrador.
+
+5. **Protección de PII**
+
+   Datos como email, teléfono, dirección y nombre deben protegerse.
+
+   Técnicas:
+   - Enmascaramiento.
+   - Hashing.
+   - Tokenización.
+   - Vistas seguras.
+   - Column-level security.
+
+6. **Auditoría**
+
+   Registrar quién accede a los datos, cuándo y desde dónde.
+
+   Herramientas:
+   - CloudTrail.
+   - Azure Monitor.
+   - Audit logs del Data Warehouse.
+   - Logs de Airflow.
+
+---
+
+# 7. Gobernanza de datos
+
+## ¿Cómo llevarías control de metadata, cambios y procesos?
+
+Implementaría una estrategia de gobernanza basada en catálogo, linaje, versionamiento y métricas de calidad.
+
+### Metadata técnica
+
+Se debe almacenar información como:
+
+| Metadata | Ejemplo |
+|---|---|
+| Fuente origen | CRM, SQL Server, PostgreSQL |
+| Tabla origen | `customers`, `transactions`, `products` |
+| Fecha de ingesta | `2026-05-24` |
+| Batch ID | Identificador de ejecución |
+| Número de registros leídos | 100000 |
+| Número de registros procesados | 99850 |
+| Número de registros rechazados | 150 |
+| Estado de ejecución | Success / Failed |
+| Duración | Tiempo de ejecución |
+| Responsable | Equipo dueño del pipeline |
+
+### Metadata funcional
+
+También registraría:
+
+| Metadata | Uso |
+|---|---|
+| Definición del dato | Qué significa cada campo |
+| Dueño del dato | Área responsable |
+| Sensibilidad | Público, interno, confidencial, PII |
+| Reglas de calidad | Validaciones aplicadas |
+| Frecuencia de actualización | Diaria, horaria, near real-time |
+| Consumidores | Operación, BI, Ciencia de Datos |
+
+### Herramientas sugeridas
+
+| Necesidad | Herramientas |
+|---|---|
+| Catálogo de datos | DataHub, OpenMetadata, AWS Glue Data Catalog, Apache Atlas |
+| Linaje | OpenLineage, Marquez, DataHub, dbt Docs |
+| Calidad de datos | Great Expectations, Soda, Deequ, dbt tests |
+| Versionamiento de código | GitHub, GitLab, Bitbucket |
+| CI/CD | GitHub Actions, GitLab CI, Azure DevOps |
+| Metadata de ejecución | Airflow metadata database |
+| Documentación de modelos | dbt Docs |
+
+### Control de cambios
+
+Para controlar cambios en esquemas y pipelines:
+
+- Versionar código en Git.
+- Revisar cambios mediante Pull Requests.
+- Ejecutar pruebas automáticas antes de desplegar.
+- Mantener documentación actualizada.
+- Registrar cambios de esquema.
+- Alertar si una fuente cambia columnas críticas.
+- Usar contratos de datos o data contracts.
+
+---
+
+# 8. Propuesta de implementación por fases
+
+## Fase 1 - Consolidación básica
+
+Objetivo: tener datos integrados y consultables por SQL.
+
+Herramientas:
+
+- Airflow.
+- Python/JDBC.
+- S3 o ADLS.
+- Parquet.
+- Spark o Glue.
+- Trino o Athena.
+- Data Warehouse.
+
+Resultado:
+
+- Datos de F1, F2 y F3 almacenados en Data Lake.
+- Tablas integradas en Silver.
+- Data mart operativo en Gold.
+
+## Fase 2 - Calidad y gobierno
+
+Objetivo: hacer el proceso confiable y auditable.
+
+Herramientas:
+
+- Great Expectations.
+- DataHub u OpenMetadata.
+- dbt Docs.
+- Airflow logs.
+- Git.
+
+Resultado:
+
+- Reglas de calidad.
+- Catálogo de datos.
+- Linaje.
+- Auditoría de ejecuciones.
+
+## Fase 3 - Ciencia de datos y grafos
+
+Objetivo: habilitar clustering y búsquedas en grafos.
+
+Herramientas:
+
+- Feature Store.
+- Databricks o SageMaker.
+- Neo4j o Amazon Neptune.
+- Notebooks.
+- MLflow.
+
+Resultado:
+
+- Dataset de features.
+- Grafo cliente-producto-transacción.
+- Base para modelos de clustering y análisis de relaciones.
