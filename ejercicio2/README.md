@@ -237,3 +237,236 @@ dim_channel_catalog
 Estas tablas permitirían mapear valores originales a valores estándar.
 
 ---
+
+## D. Aparte de un proceso batch en la hora de menor uso, ¿cómo mitigarías el impacto del pipeline sobre las fuentes originales?
+
+Para mitigar el impacto sobre sistemas transaccionales, usaría estrategias de extracción incremental y desacoplamiento.
+
+Opciones recomendadas:
+
+1. **CDC - Change Data Capture**
+
+   Permite capturar cambios sin hacer lecturas completas de las tablas.
+
+   Herramientas Posibles:
+   - AWS DMS.
+   - SQL Server CDC.
+   - PostgreSQL logical replication.
+
+2. **Réplicas de lectura**
+
+   En lugar de consultar la base productiva, el pipeline lee desde una réplica.
+
+   Herramientas Posibles:
+   - Read replicas.
+   - PostgreSQL replicas.
+
+3. **Extracción incremental por columna de actualización**
+
+   Si existen columnas como `updated_at`, se pueden extraer únicamente los registros nuevos o modificados.
+
+4. **Paginación y ventanas de tiempo**
+
+   Dividir la extracción en lotes pequeños reduce el impacto.
+
+5. **Índices sobre columnas de extracción**
+
+   Crear índices en campos como `updated_at`, `transaction_date` o llaves primarias ayuda a reducir el costo de las consultas.
+
+6. **Colas o eventos**
+
+   Cuando sea posible, publicar cambios a una cola o stream.
+
+   Herramientas Posibles:
+   - Kafka.
+   - Amazon MSK.
+   - EventBridge.
+   - Pub/Sub.
+   - Azure Event Hubs.
+
+---
+
+## E. ¿Cuáles etapas considerarías en tu proceso de transformación de datos y qué uso les darías?
+
+Usaría una arquitectura por capas.
+
+### 1. Raw / Landing
+
+Guarda los datos tal como llegan desde la fuente.
+
+Uso:
+
+- Auditoría.
+- Reproceso.
+- Trazabilidad.
+- Conservación de datos originales.
+
+Herramientas:
+
+- Amazon S3.
+- Azure Data Lake Storage.
+- Google Cloud Storage.
+- MinIO.
+- Formatos JSON, CSV, Avro o Parquet crudo.
+
+### 2. Bronze
+
+Primera estandarización de datos.
+
+Uso:
+
+- Conversión de tipos.
+- Limpieza mínima.
+- Normalización de nombres de columnas.
+- Agregar columnas técnicas como `source_system`, `ingestion_date` y `batch_id`.
+
+Herramientas:
+
+- Spark.
+- Databricks.
+- AWS Glue.
+- PySpark.
+- Polars para volúmenes pequeños o medianos.
+
+### 3. Silver
+
+Capa integrada y homologada.
+
+Uso:
+
+- Unificar clientes.
+- Homologar productos.
+- Deduplicar registros.
+- Validar reglas de calidad.
+- Resolver diferencias entre SQL Server y PostgreSQL.
+
+Herramientas:
+
+- Spark.
+- dbt.
+- Databricks.
+- Delta Lake o Iceberg.
+
+### 4. Gold
+
+Capa lista para consumo de negocio.
+
+Uso:
+
+- Data marts.
+- Indicadores operativos.
+- KPIs.
+- Tablas agregadas.
+- Modelos dimensionales.
+
+Herramientas:
+
+- dbt.
+- Snowflake.
+- Redshift.
+- BigQuery.
+- Synapse.
+- Trino.
+
+### 5. Feature / Graph Layer
+
+Capa enfocada en ciencia de datos.
+
+Uso:
+
+- Variables para clustering.
+- Relaciones cliente-producto.
+- Redes de clientes y productos.
+- Datasets para modelos.
+
+Herramientas:
+
+- Feature Store.
+- Databricks Feature Store.
+- SageMaker Feature Store.
+- Neo4j.
+- Amazon Neptune.
+- TigerGraph.
+
+---
+
+## F. ¿Qué herramientas utilizas para las etapas de transformación?
+
+Utilizaría distintas herramientas dependiendo del volumen, criticidad y tipo de transformación.
+
+| Etapa | Herramientas | Justificación |
+|---|---|---|
+| Limpieza inicial | Python, Polars, PySpark | Útil para reglas simples, parsing de fechas y normalización |
+| Transformación distribuida | Apache Spark, Databricks, AWS Glue | Adecuado para grandes volúmenes |
+| Transformación SQL | dbt, Spark SQL, Trino, Snowflake SQL | Facilita modelos versionados y documentados |
+| Calidad de datos | Great Expectations, dbt tests | Permite validar reglas y generar evidencia |
+| Deduplicación e integración | Spark, dbt, SQL | Permite aplicar reglas de negocio y llaves homologadas |
+| Features ML | PySpark, Python, Feature Store | Preparación de variables para ciencia de datos |
+| Grafos | Neo4j, Amazon Neptune, TigerGraph | Modelado de relaciones y búsqueda en grafos |
+
+---
+
+## G. ¿Qué storage usarías para cada propósito y por qué?
+
+### Storage para Data Lake
+
+Usaría almacenamiento de objetos:
+
+- Amazon S3.
+- Azure Data Lake Storage.
+- Google Cloud Storage.
+- MinIO para desarrollo local.
+
+Justificación:
+
+- Escalable.
+- Económico.
+- Compatible con múltiples motores.
+- Adecuado para datos históricos.
+- Permite almacenar datos en distintas capas.
+
+Formato recomendado:
+
+- Parquet.
+- Delta Lake.
+- Apache Iceberg.
+- Apache Hudi.
+
+### Storage para consultas SQL operativas
+
+Usaría un Data Warehouse:
+
+- Snowflake.
+- Amazon Redshift.
+- BigQuery.
+- Azure Synapse.
+
+Justificación:
+
+- Mejor rendimiento para consultas SQL.
+- Compatible con BI.
+- Permite controlar permisos por usuarios, roles y vistas.
+- Facilita modelos dimensionales.
+
+### Storage para ciencia de datos
+
+Usaría:
+
+- Data Lake en Parquet para históricos.
+- Feature Store para variables reutilizables.
+- Graph Database para relaciones complejas.
+
+Herramientas:
+
+- Databricks Feature Store.
+- SageMaker Feature Store.
+- Neo4j.
+- Amazon Neptune.
+- TigerGraph.
+
+Justificación:
+
+- Ciencia de datos requiere datos históricos, flexibles y con posibilidad de reprocesamiento.
+- Los grafos requieren un motor especializado en relaciones, no solo tablas relacionales.
+
+---
