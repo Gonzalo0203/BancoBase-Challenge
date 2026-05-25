@@ -39,13 +39,13 @@ La solución considera ingesta incremental, almacenamiento por capas, transforma
 | Ingesta desde PostgreSQL | AWS DMS, Airbyte, JDBC, logical replication | Extraer transacciones desde PostgreSQL |
 | Orquestación | Apache Airflow, Cloud Composer, Azure Data Factory | Coordinar tareas, dependencias y horarios de ejecución |
 | Almacenamiento Raw | Amazon S3, Azure Data Lake Storage, Google Cloud Storage, MinIO | Guardar datos originales sin modificar |
-| Formato analítico | Parquet, Delta Lake, Apache Iceberg, Apache Hudi | Optimizar lectura, compresión y evolución de datos |
+| Formato analítico (Bronze) | Parquet, Delta Lake, Apache Iceberg | Optimizar lectura, compresión y evolución de datos |
 | Procesamiento | Apache Spark, Databricks, AWS Glue, PySpark, Python | Limpieza, integración y transformación de datos |
-| Transformación SQL | dbt, Spark SQL, Trino, Snowflake SQL, BigQuery SQL | Modelado analítico y reglas de negocio |
-| Calidad de datos | Great Expectations, Soda, Deequ, dbt tests | Validar nulos, duplicados, rangos y reglas |
-| Data Warehouse | Snowflake, Amazon Redshift, BigQuery, Azure Synapse | Consultas SQL para usuarios operativos |
-| Consulta sobre Data Lake | Trino, Athena, Presto, Databricks SQL | Consulta SQL directa sobre archivos en el Data Lake |
-| Ciencia de datos | Databricks, SageMaker, Vertex AI, notebooks, Feature Store | Preparación de datasets y entrenamiento de modelos |
+| Transformación (Silver) | dbt, Spark SQL, Trino, Snowflake SQL, BigQuery SQL | Modelado analítico y reglas de negocio |
+| Calidad de datos | dbt tests | Validar nulos, duplicados, rangos y reglas |
+| Data Warehouse (Gold) | Snowflake, Amazon Redshift, BigQuery, Azure Synapse | Consultas SQL para usuarios operativos |
+| Consulta sobre Data Lake | Trino, Athena, Databricks SQL | Consulta SQL directa sobre archivos en el Data Lake |
+| Ciencia de datos | Databricks, SageMaker, Vertex AI, notebooks | Preparación de datasets y entrenamiento de modelos |
 | Grafos | Neo4j, Amazon Neptune, TigerGraph | Análisis de relaciones entre clientes, productos y transacciones |
 | Catálogo y metadata | Glue Data Catalog, DataHub, OpenMetadata, Apache Atlas | Control de metadatos, linaje y documentación |
 | Seguridad | IAM, KMS, Secrets Manager, Vault, RBAC | Control de accesos, cifrado y secretos |
