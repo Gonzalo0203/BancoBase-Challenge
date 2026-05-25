@@ -60,6 +60,70 @@ La solución considera ingesta incremental, almacenamiento por capas, transforma
 
 No extraería toda la información de las fuentes. Extraería únicamente los campos necesarios para cumplir los dos objetivos: consultas SQL operativas y análisis de ciencia de datos. Para ello definiría con negocio los datos que necesitan, en caso de que sea la mayoría o no supieran los datos que necesitan extraería todo pero en los catálogos de silver y gold solo definiría lo necesario.
 
+### F1 - CRM propietario
+
+Del CRM extraería información de clientes, datos demográficos y algunos datos de contacto necesarios para operación.
+
+Ejemplo de campos:
+
+| Campo | Uso |
+|---|---|
+| `customer_id` | Identificador del cliente |
+| `name` | Nombre del cliente o razón social |
+| `birth_date` | Cálculo de edad o rango de edad |
+| `gender` | Variable demográfica |
+| `customer_segment` | Segmentación comercial |
+| `email` | Contacto operativo, con protección de PII |
+| `phone` | Contacto operativo, con protección de PII |
+| `address` | Ubicación o zona, con protección de PII |
+| `customer_status` | Cliente activo, inactivo o bloqueado |
+| `created_at` | Fecha de alta |
+| `updated_at` | Control incremental |
+
+Para ciencia de datos, no necesariamente usaría el dato sensible directo como correo o teléfono. En su lugar usaría atributos derivados, enmascarados o agregados, por correo, zona geográfica o rango de edad.
+
+### F2 - SQL Server
+
+De SQL Server extraería las transacciones de una parte de los productos.
+
+Ejemplo de campos:
+
+| Campo | Uso |
+|---|---|
+| `transaction_id` | Identificador de la transacción |
+| `customer_id` | Relación con cliente |
+| `product_id` | Relación con producto |
+| `product_type` | Clasificación del producto |
+| `amount` | Monto de la transacción |
+| `currency` | Moneda |
+| `transaction_date` | Fecha de operación |
+| `transaction_status` | Estado de la transacción |
+| `channel` | Canal de operación |
+| `branch_id` | Sucursal o punto de atención |
+| `updated_at` | Control incremental |
+
+### F3 - PostgreSQL
+
+De PostgreSQL extraería campos similares a SQL Server para poder homologar las transacciones.
+
+Ejemplo de campos:
+
+| Campo | Uso |
+|---|---|
+| `transaction_id` | Identificador de la transacción |
+| `customer_id` | Relación con cliente |
+| `product_id` | Relación con producto |
+| `product_type` | Clasificación del producto |
+| `amount` | Monto de la transacción |
+| `currency` | Moneda |
+| `transaction_date` | Fecha de operación |
+| `transaction_status` | Estado de la transacción |
+| `channel` | Canal de operación |
+| `branch_id` | Sucursal o punto de atención |
+| `updated_at` | Control incremental |
+
+Además, agregaría un campo técnico llamado `source_system` para identificar el origen de cada registro
+
 ## B. ¿Qué posibles retos implica la extracción de cada fuente y qué herramientas utilizarías?
 
 ### F1 - CRM propietario
