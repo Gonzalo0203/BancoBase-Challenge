@@ -25,7 +25,9 @@ La solución considera ingesta incremental, almacenamiento por capas, transforma
 
 ---
 
-## 3. Diagrama de arquitectura con herramientas
+## 3. Diagrama de arquitectura propuesta
+
+![Arquitectura Propuesta](./dataArchitectureEjercicio2.svg)
 
 
 ---
